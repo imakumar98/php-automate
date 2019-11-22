@@ -1,0 +1,180 @@
+<?php
+
+    /**
+     * This file use to create batches from CSV TO sql
+     * Author: Ashwani
+     * Date: 22 November 2019
+     */
+
+    
+    
+    
+
+    //Import CSV
+    $csv = fopen('batches.csv','r');
+
+
+    //Initialize courses array
+    $courses = array();
+
+
+    //Initialize trainers array
+    $trainers = array();
+
+
+    //Initialize  array
+    $owners = array();
+
+
+    //Initialize batches array
+    $batches = array();
+
+
+    //Initilize row count as 0
+    $row_count = 0;
+
+    
+    //Run loop in CSV
+    while(($row = fgetcsv($csv)) !== FALSE){
+
+        if($row_count>0){
+
+            $batch = array();
+
+            $batch['batch_number'] = clean_string($row[1]);
+
+            $batch['created_at'] = clean_string($row[2]);
+            
+            $batch['batch_type'] = clean_string($row[3]);
+
+            $batch['course_id'] = insert_course($row[4]); 
+
+            $batch['client_name'] = clean_string($row[6]);
+
+            if(clean_string($row[7])=='Classroom'){
+
+                $batch['is_classroom'] = 1; 
+
+            }else{
+
+                $batch['is_classroom'] = 0; 
+
+            }
+
+            $batch['city'] = clean_string($row[8]);
+
+            $batch['batch_owner_id'] = insert_owner($row[9]); 
+
+            $batch['venue'] = clean_string($row[10]);
+
+            $batch['trainer_id'] = insert_trainer($row[11]); 
+
+            $batch['zoom_url'] = clean_string($row[12]); 
+
+
+            $batches[] = $batch;
+
+        }
+
+        $row_count++;
+
+    }
+
+
+    //Function to insert course into array
+    function insert_course($course){
+
+        global $courses;
+
+        $course = clean_string($course);
+
+        if(!in_array($course, $courses)){
+
+            array_push($courses, $course);
+
+            return count($courses) - 1;
+
+        }else{
+
+            return array_search($course, $courses);
+
+        }
+    }
+
+
+    //Function to insert trainer into array
+    function insert_trainer($trainer){
+
+        global $trainers;
+
+        $trainer = clean_string($trainer);
+
+        if(!in_array($trainer, $trainers)){
+
+            array_push($trainers, $trainer);
+
+            return count($trainers) - 1;
+
+        }else{
+
+            return array_search($trainer, $trainers);
+
+        }
+    }
+
+
+    //Function to insert trainer into array
+    function insert_owner($owner){
+
+        global $owners;
+
+        $owner = clean_string($owner);
+
+        if(!in_array($owner, $owners)){
+
+            array_push($owners, $owner);
+
+            return count($owners) - 1;
+
+        }else{
+
+            return array_search($owner, $owners);
+
+        }
+    }
+
+
+    //Function to clean string
+    function clean_string($string){
+        return trim($string);
+        // return addslashes($string);
+    }
+
+
+
+
+    $batches = json_encode($batches);
+    
+    
+    //Show batches
+    // print_r($batches);
+    
+    
+    
+    //Show List of courses
+    // print_r($courses);
+    
+    
+    
+    //  //Show List of trainers
+    // print_r($trainers);
+    
+    
+    //  //Show List of trainers
+    // print_r($owners);
+
+
+    //Show batches
+    print_r($batches);
+
+?>
